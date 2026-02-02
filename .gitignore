@@ -10,6 +10,8 @@
 # Build outputs
 bin/
 obj/
+**/bin/
+**/obj/
 
 # Logs
 *.log
