@@ -13,3 +13,6 @@ obj/
 
 # Logs
 *.log
+
+#env
+.env
