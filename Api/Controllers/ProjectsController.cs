@@ -52,7 +52,11 @@ public sealed class ProjectsController(AppDbContext db) : ControllerBase
             .Select(x => new ProjectResponse(x.Id, x.Name, x.Description, x.CreatedAt, x.UpdatedAt))
             .FirstOrDefaultAsync(ct);
 
-        if (item == null) return NotFound();
+        if (item == null) return Problem(
+                  title: "Project not found",
+                  detail: $"Project '{id}' does not exist.",
+                  statusCode: StatusCodes.Status404NotFound);
+
         return Ok(item);
 
     }
@@ -82,7 +86,11 @@ public sealed class ProjectsController(AppDbContext db) : ControllerBase
     public async Task<IActionResult> Update(Guid id , ProjectUpdateRequest request, CancellationToken ct)
     {
         var entity = await db.Projects.FirstOrDefaultAsync(x => x.Id == id,ct);
-        if (entity == null) return NotFound();
+        if (entity == null) return Problem(
+                  title: "Project not found",
+                  detail: $"Project '{id}' does not exist.",
+                  statusCode: StatusCodes.Status404NotFound);
+
 
         entity.Name = request.Name.Trim();
         entity.Description = request.Description?.Trim();
@@ -99,7 +107,10 @@ public sealed class ProjectsController(AppDbContext db) : ControllerBase
     {
 
         var entity = await db.Projects.FirstOrDefaultAsync(x => x.Id == id,ct);
-        if (entity == null) return NotFound();
+        if (entity == null) return Problem(
+                  title: "Project not found",
+                  detail: $"Project '{id}' does not exist.",
+                  statusCode: StatusCodes.Status404NotFound); 
 
         db.Projects.Remove(entity);
         await db.SaveChangesAsync(ct);
