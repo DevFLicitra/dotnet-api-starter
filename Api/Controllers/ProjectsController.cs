@@ -3,6 +3,8 @@ using Api.Data;
 using Api.Domain;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Api.Contracts.Common;
+using System.Numerics;
 
 namespace Api.Controllers;
 
@@ -12,17 +14,35 @@ namespace Api.Controllers;
 public sealed class ProjectsController(AppDbContext db) : ControllerBase
 {
     [HttpGet]
-    public async Task<ActionResult<List<ProjectResponse>>> GetAll(CancellationToken ct)
+    public async Task<ActionResult<PagedResponse<ProjectResponse>>> GetAll(
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken ct = default)
     {
-        var items = await db.Projects.AsNoTracking()
-            .OrderByDescending(x => x.CreatedAt)
+        if(page < 1)
+            return Problem(title: "Invalid page", detail: "Page must be >= 1",statusCode: StatusCodes.Status400BadRequest);
+
+
+        if (pageSize < 1 || pageSize > 100)
+            return Problem(title: "Invalid pageSize", detail: "pageSize must be between 1 and 100", statusCode: StatusCodes.Status400BadRequest);
+
+        var query = db.Projects.AsNoTracking()
+            .OrderByDescending(x => x.CreatedAt);
+
+        var totalItems = await query.CountAsync(ct);
+        var totalPages = totalItems == 0 ? 0 : (int)Math.Ceiling(totalItems / (double)pageSize);
+
+        var items = await query
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .Select(x => new ProjectResponse(x.Id, x.Name, x.Description, x.CreatedAt, x.UpdatedAt))
             .ToListAsync(ct);
 
-        return Ok(items);
-
+        return Ok(new PagedResponse<ProjectResponse>(items, page, pageSize, totalItems, totalPages));
     }
-
+        
+        
+       
 
     [HttpGet("{id:guid}")]
     public async Task<ActionResult<ProjectResponse>> GetById(Guid id ,CancellationToken ct)
