@@ -1,33 +1,19 @@
-# dotnet-api-starter
+##  Italiano 
+ASP.NET Core Web API + SQL Server (Docker) + EF Core + CRUD `Projects`.
 
-## 🇮🇹 Italiano 
-API backend in **ASP.NET Core** con **SQL Server in Docker** e **EF Core**.  
-Include un CRUD completo per `Projects` (visibile in Swagger) e una pipeline **CI** (build + test) su GitHub Actions.
-
-**Run rapido**
-- DB: crea `.env` da `env.example` → `docker compose up -d`
-- Secrets: `dotnet user-secrets init --project Api/Api.csproj` + set `ConnectionStrings:Default`
-- Migrazioni: `dotnet ef database update --project Api/Api.csproj --startup-project Api/Api.csproj`
-- Avvio: `dotnet run --project Api/Api.csproj` → Swagger `http://localhost:5236/swagger`
+- Validazione con FluentValidation → input non valido = 400 con dettagli.
+- Errori in formato ProblemDetails (+ traceId).
+- Paginazione: `GET /api/projects?page=1&pageSize=10` → `PagedResponse`.
+- Test xUnit per i validator.
 
 Endpoint: `/api/projects`
-
----
 
 ## English 
-Backend **ASP.NET Core Web API** with **SQL Server (Docker)** and **EF Core**.  
-Includes full `Projects` CRUD (Swagger-ready) and **CI** (build + test) via GitHub Actions.
+ASP.NET Core Web API + SQL Server (Docker) + EF Core + `Projects` CRUD.
 
-**Quick run**
-- DB: create `.env` from `env.example` → `docker compose up -d`
-- Secrets: init + set `ConnectionStrings:Default`
-- Migrations: `dotnet ef database update --project Api/Api.csproj --startup-project Api/Api.csproj`
-- Run: `dotnet run --project Api/Api.csproj` → Swagger `http://localhost:5236/swagger`
+- FluentValidation → invalid input = 400 with details.
+- ProblemDetails error format (+ traceId).
+- Pagination: `GET /api/projects?page=1&pageSize=10` → `PagedResponse`.
+- xUnit tests for validators.
 
 Endpoint: `/api/projects`
-
-
-
-
-
-
