@@ -11,11 +11,12 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options): DbCont
 
     protected override void  OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<AppUser>()
-            .HasIndex(u => u.Email)
-            .IsUnique();
-
+      
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<AppUser>()
+          .HasIndex(u => u.Email)
+          .IsUnique();
 
         modelBuilder.Entity<Project>(entity =>
         {
