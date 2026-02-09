@@ -7,8 +7,14 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options): DbCont
 {
     public DbSet<Project> Projects => Set<Project>();
 
+    public DbSet<AppUser> Users => Set<AppUser>();
+
     protected override void  OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<AppUser>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<Project>(entity =>
