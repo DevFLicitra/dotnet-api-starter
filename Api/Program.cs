@@ -1,8 +1,11 @@
 using Api.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Options;
 using FluentValidation;
 using FluentValidation.AspNetCore;
+using Api.Auth;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
 
 
 
@@ -42,6 +45,43 @@ builder.Services.AddProblemDetails(options =>
 
 });
 
+
+var jwtIssuer = builder.Configuration["Jwt:Issuer"] ?? "dotnet-api-starter";
+var jwtAudience = builder.Configuration["Jwt:Audience"] ?? "dotnet-api-starter";
+var jwtKey = builder.Configuration["Jwt:Key"];
+
+if(string.IsNullOrWhiteSpace(jwtKey))
+{
+    jwtKey = builder.Environment.IsDevelopment()
+             ? "dev-only-key-change-me-dev-only-key-change-me"
+             : throw new InvalidOperationException("Jwt:Key missing");
+
+}
+
+builder.Services.AddSingleton(new JwtSettings(jwtIssuer, jwtAudience, jwtKey));
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+     .AddJwtBearer(o =>
+     {
+         o.TokenValidationParameters = new TokenValidationParameters
+         {
+             ValidateIssuer = true,
+             ValidIssuer = jwtIssuer,
+             ValidateAudience = true,
+             ValidAudience = jwtAudience,
+             ValidateIssuerSigningKey = true,
+             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+             ValidateLifetime = true,
+             ClockSkew = TimeSpan.FromSeconds(30)
+         };
+
+
+     });
+
+builder.Services.AddAuthorization();
+
+
+
 var app = builder.Build();
 
 app.UseExceptionHandler();
@@ -55,6 +95,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
