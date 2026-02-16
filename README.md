@@ -1,35 +1,29 @@
 # dotnet-api-starter
 
-##  Italiano 
-ASP.NET Core Web API + SQL Server (Docker) + EF Core + CRUD `Projects` + JWT Auth.
+## Descrizione
 
-- Validazione con FluentValidation → input non valido = 400 con dettagli.
-- Errori in formato ProblemDetails (+ traceId).
-- Paginazione: `GET /api/projects?page=1&pageSize=10` → `PagedResponse`.
-- JWT Auth: `POST /api/auth/register`, `POST /api/auth/login` (token), `GET /api/auth/me` (protetto).
-- Swagger configurato con **Authorize (Bearer JWT)**.
-- Health check: `GET /health` (include check DB).
-- Test xUnit: validator + integration tests (Projects + Auth) con `WebApplicationFactory` + EF Core InMemory.
+API di esempio in .NET 8 con funzionalità base: registrazione/login con JWT, gestione progetti, validazione e rate limiting. Utile per capire come strutturare un'API REST sicura e scalabile.
 
-Endpoints:
-- `/api/projects`
-- `/api/auth/*`
-- `/health`
+## Endpoint principali
 
----
+- **POST** `/api/auth/register`: Registra un nuovo utente
+- **POST** `/api/auth/login`: Autenticazione e generazione JWT
+- **GET** `/api/auth/me`: Dettagli utente autenticato (solo con JWT valido)
 
-##  English
-ASP.NET Core Web API + SQL Server (Docker) + EF Core + `Projects` CRUD + JWT Auth.
+- **GET** `/api/projects`: Lista progetti con paginazione
+- **POST** `/api/projects`: Crea un nuovo progetto
+- **GET** `/api/projects/{id}`: Dettaglio progetto
+- **PUT** `/api/projects/{id}`: Modifica progetto
 
-- FluentValidation → invalid input = 400 with details.
-- ProblemDetails error format (+ traceId).
-- Pagination: `GET /api/projects?page=1&pageSize=10` → `PagedResponse`.
-- JWT Auth: `POST /api/auth/register`, `POST /api/auth/login` (token), `GET /api/auth/me` (protected).
-- Swagger configured with **Authorize (Bearer JWT)**.
-- Health check: `GET /health` (includes DB check).
-- xUnit tests: validators + integration tests (Projects + Auth) using `WebApplicationFactory` + EF Core InMemory.
+## Rate Limiting
 
-Endpoints:
-- `/api/projects`
-- `/api/auth/*`
-- `/health`
+Limite di 60 richieste ogni 1 minuto. Superato il limite, l'API restituisce errore `429 Too Many Requests`.
+
+## Test
+
+I test sono separati in **Unit Test** e **Integration Test** per garantire il corretto funzionamento dell'API.
+
+Per eseguire i test:
+
+```bash
+dotnet test
