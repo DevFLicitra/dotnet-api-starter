@@ -5,10 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Api.Contracts.Common;
 using System.Numerics;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Api.Controllers;
 
-
+[EnableRateLimiting("fixed")]
 [ApiController]
 [Route("api/projects")]
 public sealed class ProjectsController(AppDbContext db) : ControllerBase
