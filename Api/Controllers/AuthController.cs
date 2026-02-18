@@ -9,11 +9,12 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Asp.Versioning;
 
 
-
+[ApiVersion("1.0")]
 [ApiController]
-[Route("api/auth")]
+[Route("api/v{version:apiVersion}/auth")]
 public class AuthController : ControllerBase
 {
     private readonly AppDbContext _db;

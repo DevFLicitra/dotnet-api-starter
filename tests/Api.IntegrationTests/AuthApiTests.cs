@@ -29,10 +29,10 @@ public class AuthApiTests : IClassFixture<CustomWebApplicationFactory>
         var email = "test@example.com";
         var password = "Password123!";
 
-        var reg = await _client.PostAsJsonAsync("/api/auth/register", new { email, password });
+        var reg = await _client.PostAsJsonAsync("/api/v1/auth/register", new { email, password });
         Assert.True(reg.StatusCode is HttpStatusCode.Created or HttpStatusCode.Conflict);
 
-        var login = await _client.PostAsJsonAsync("/api/auth/login", new { email, password });
+        var login = await _client.PostAsJsonAsync("/api/v1/auth/login", new { email, password });
         Assert.Equal(HttpStatusCode.OK, login.StatusCode);
 
         var auth = await login.Content.ReadFromJsonAsync <AuthResponse>();
@@ -40,7 +40,7 @@ public class AuthApiTests : IClassFixture<CustomWebApplicationFactory>
 
         _client.DefaultRequestHeaders.Authorization  = new AuthenticationHeaderValue("Bearer",auth!.AccessToken);
 
-        var me = await _client.GetAsync("/api/auth/me");
+        var me = await _client.GetAsync("/api/v1/auth/me");
         Assert.Equal(HttpStatusCode.OK, me.StatusCode);
 
 

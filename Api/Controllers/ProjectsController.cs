@@ -6,12 +6,14 @@ using Microsoft.EntityFrameworkCore;
 using Api.Contracts.Common;
 using System.Numerics;
 using Microsoft.AspNetCore.RateLimiting;
+using Asp.Versioning;
 
 namespace Api.Controllers;
 
 [EnableRateLimiting("fixed")]
+[ApiVersion("1.0")]
 [ApiController]
-[Route("api/projects")]
+[Route("api/v{version:apiVersion}/projects")]
 public sealed class ProjectsController(AppDbContext db) : ControllerBase
 {
     [HttpGet]

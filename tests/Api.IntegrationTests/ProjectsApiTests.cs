@@ -23,10 +23,10 @@ public sealed class ProjectsApiTests : IClassFixture<CustomWebApplicationFactory
     {
         var payload = new { name = "Integration Test Project" };
 
-        var post = await _client.PostAsJsonAsync("/api/projects", payload);
+        var post = await _client.PostAsJsonAsync("/api/v1/projects", payload);
         Assert.Equal(HttpStatusCode.Created, post.StatusCode);
 
-        var get = await _client.GetAsync("/api/projects?page=1&pageSize=10");
+        var get = await _client.GetAsync("/api/v1/projects?page=1&pageSize=10");
         Assert.Equal(HttpStatusCode.OK, get.StatusCode);
 
         var body = await get.Content.ReadAsStringAsync();
