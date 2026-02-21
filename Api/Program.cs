@@ -39,7 +39,6 @@ builder.Services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
 
 
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -143,6 +142,31 @@ builder.Services.AddRateLimiter(o =>
 
 
 var app = builder.Build();
+
+// Auto-migrate 
+if (app.Environment.IsDevelopment())
+{
+    using var scope = app.Services.CreateScope();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    if (db.Database.IsRelational())
+    {
+        // piccolo retry: SQL Server container può metterci un attimo a essere pronto
+        const int maxAttempts = 10;
+        for (var attempt = 1; attempt <= maxAttempts; attempt++)
+        {
+            try
+            {
+                db.Database.Migrate();
+                break;
+            }
+            catch when (attempt < maxAttempts)
+            {
+                Thread.Sleep(TimeSpan.FromSeconds(2 * attempt));
+            }
+        }
+    }
+}
 
 app.UseExceptionHandler();
 
