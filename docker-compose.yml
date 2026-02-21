@@ -10,6 +10,24 @@ services:
     volumes:
       - sqlserver_data:/var/opt/mssql
 
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dotnet-api-starter-api
+    depends_on:
+      - db
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      # Connessione dal container API verso il container DB (hostname = nome service "db")
+      ConnectionStrings__Default: "Server=db;Database=DotnetApiStarter;User Id=sa;Password=${MSSQL_SA_PASSWORD};TrustServerCertificate=True;Encrypt=False"
+      # JWT (in dev puoi anche non metterlo perché hai fallback, ma è meglio esplicitarlo)
+      Jwt__Issuer: "dotnet-api-starter"
+      Jwt__Audience: "dotnet-api-starter"
+      Jwt__Key: "${JWT_KEY}"
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
 
 volumes:
   sqlserver_data:

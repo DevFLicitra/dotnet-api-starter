@@ -1,29 +1,123 @@
 # dotnet-api-starter
 
-## Descrizione
+[English](#english) | [Italiano](#italiano)
 
-API di esempio in .NET 8 con funzionalità base: registrazione/login con JWT, gestione progetti, validazione e rate limiting. Utile per capire come strutturare un'API REST sicura e scalabile.
+[![CI](https://github.com/DevFLicitra/dotnet-api-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/DevFLicitra/dotnet-api-starter/actions/workflows/ci.yml)
 
-## Endpoint principali
+A production-minded ASP.NET Core Web API starter: JWT auth, SQL Server (EF Core), Swagger, health checks, tests, CI, and Docker end-to-end.
 
-- **POST** `/api/auth/register`: Registra un nuovo utente
-- **POST** `/api/auth/login`: Autenticazione e generazione JWT
-- **GET** `/api/auth/me`: Dettagli utente autenticato (solo con JWT valido)
+---
 
-- **GET** `/api/projects`: Lista progetti con paginazione
-- **POST** `/api/projects`: Crea un nuovo progetto
-- **GET** `/api/projects/{id}`: Dettaglio progetto
-- **PUT** `/api/projects/{id}`: Modifica progetto
+## English
 
-## Rate Limiting
+### What’s inside
+- **ASP.NET Core Web API** (.NET)
+- **EF Core + SQL Server**
+- **JWT Authentication** (Register / Login / Me)
+- **Swagger/OpenAPI**
+- **Health Checks**
+- **Automated tests** + **GitHub Actions CI**
+- **Docker end-to-end**: run **API + DB** with one command
 
-Limite di 60 richieste ogni 1 minuto. Superato il limite, l'API restituisce errore `429 Too Many Requests`.
+---
 
-## Test
+## Quickstart (Docker) ✅ Recommended
 
-I test sono separati in **Unit Test** e **Integration Test** per garantire il corretto funzionamento dell'API.
+### Requirements
+- Docker Desktop
 
-Per eseguire i test:
+### 1) Create `.env`
+Copy from `env.example`:
+```bash
+cp env.example .env
+```
 
+Example `.env`:
+```bash
+MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+JWT_KEY=dev-only-key-change-me-dev-only-key-change-me
+```
+
+### 2) Run API + DB
+```bash
+docker compose up --build
+```
+
+### 3) Open
+- Swagger UI: http://localhost:8080/swagger
+- Health: http://localhost:8080/health
+
+### Auth endpoints (versioned)
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET  /api/v1/auth/me` (Authorization: Bearer `<token>`)
+
+Example (register):
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"test@example.com\",\"password\":\"Password123!\"}"
+```
+
+### Tests
 ```bash
 dotnet test
+```
+
+---
+
+## Italiano
+
+### Cosa include
+- **ASP.NET Core Web API** (.NET)
+- **EF Core + SQL Server**
+- **Autenticazione JWT** (Register / Login / Me)
+- **Swagger/OpenAPI**
+- **Health Checks**
+- **Test automatici** + **GitHub Actions CI**
+- **Docker end-to-end**: avvia **API + DB** con un solo comando
+
+---
+
+## Avvio rapido (Docker) ✅ Consigliato
+
+### Requisiti
+- Docker Desktop
+
+### 1) Crea `.env`
+Copia da `env.example`:
+```bash
+cp env.example .env
+```
+
+Esempio `.env`:
+```bash
+MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+JWT_KEY=dev-only-key-change-me-dev-only-key-change-me
+```
+
+### 2) Avvia API + DB
+```bash
+docker compose up --build
+```
+
+### 3) Apri
+- Swagger UI: http://localhost:8080/swagger
+- Health: http://localhost:8080/health
+
+### Endpoint Auth (versionati)
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET  /api/v1/auth/me` (Authorization: Bearer `<token>`)
+
+Esempio (register):
+```bash
+curl -X POST http://localhost:8080/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d "{\"email\":\"test@example.com\",\"password\":\"Password123!\"}"
+```
+
+### Test
+```bash
+dotnet test
+```
