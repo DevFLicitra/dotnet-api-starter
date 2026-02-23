@@ -1,4 +1,4 @@
-[![codecov](https://codecov.io/github/DevFLicitra/dotnet-api-starter/graph/badge.svg?token=WSR4AZ8TR5)](https://codecov.io/github/DevFLicitra/dotnet-api-starter)
+[![codecov](https://codecov.io/gh/DevFLicitra/dotnet-api-starter/branch/main/graph/badge.svg)](https://codecov.io/gh/DevFLicitra/dotnet-api-starter)
 
 # dotnet-api-starter
 
