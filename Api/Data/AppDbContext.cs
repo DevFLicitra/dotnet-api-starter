@@ -9,9 +9,23 @@ public sealed class AppDbContext(DbContextOptions<AppDbContext> options): DbCont
 
     public DbSet<AppUser> Users => Set<AppUser>();
 
+    public DbSet<RefreshToken> RefreshTokens => Set<RefreshToken>();
+
+
     protected override void  OnModelCreating(ModelBuilder modelBuilder)
     {
-      
+
+        modelBuilder.Entity<RefreshToken>(entity =>    
+        {
+            entity.ToTable("RefreshTokens");
+            entity.HasKey(x => x.Id);
+            entity.Property(x => x.TokenHash).IsRequired();
+            entity.HasOne(x => x.User)
+                  .WithMany()
+                  .HasForeignKey(x => x.UserId);
+        });
+
+
         base.OnModelCreating(modelBuilder);
 
         modelBuilder.Entity<AppUser>()
