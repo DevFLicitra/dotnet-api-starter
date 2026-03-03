@@ -7,4 +7,7 @@ public class AppUser
     public string PasswordHash { get; set; } = string.Empty;
     public string Role { get; set; } = "User";
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
+    public int FailedLoginAttempts { get; set; }
+    public DateTime? LockoutUntil { get; set; }
+
 }
