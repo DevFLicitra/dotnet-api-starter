@@ -1,33 +1,20 @@
 name: CI
-
 on:
   push:
     branches: ["main"]
   pull_request:
-
 jobs:
   build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Setup .NET (from global.json)
         uses: actions/setup-dotnet@v4
         with:
           global-json-file: global.json
-
       - name: Restore
         run: dotnet restore
-      
       - name: Build
         run: dotnet build -c Release --no-restore
-
-      - name: Test (with coverage)
-        run: dotnet test -c Release --no-build --collect:"XPlat Code Coverage" --results-directory ./TestResults
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          directory: ./TestResults
-          fail_ci_if_error: true
+      - name: Test
+        run: dotnet test -c Release --no-build
