@@ -1,125 +1,211 @@
-[![codecov](https://codecov.io/gh/DevFLicitra/dotnet-api-starter/branch/main/graph/badge.svg)](https://codecov.io/gh/DevFLicitra/dotnet-api-starter)
-
 # dotnet-api-starter
 
 [English](#english) | [Italiano](#italiano)
 
 [![CI](https://github.com/DevFLicitra/dotnet-api-starter/actions/workflows/ci.yml/badge.svg)](https://github.com/DevFLicitra/dotnet-api-starter/actions/workflows/ci.yml)
 
-A production-minded ASP.NET Core Web API starter: JWT auth, SQL Server (EF Core), Swagger, health checks, tests, CI, and Docker end-to-end.
-
 ---
 
 ## English
 
-### What’s inside
-- **ASP.NET Core Web API** (.NET)
+A personal starter template I built to have a solid, production-ready base whenever I start a new ASP.NET Core Web API project. It covers the things I always end up needing: auth, security, Docker, CI, tests.
+
+### What's inside
+
+- **ASP.NET Core Web API** (.NET 8)
 - **EF Core + SQL Server**
-- **JWT Authentication** (Register / Login / Me)
-- **Swagger/OpenAPI**
-- **Health Checks**
-- **Automated tests** + **GitHub Actions CI**
-- **Docker end-to-end**: run **API + DB** with one command
+- **JWT Authentication** — register, login, get current user
+- **Refresh tokens** with rotation and revoke (no long-lived access tokens)
+- **Brute force protection** — account lockout after 5 failed login attempts
+- **RBAC** — User and Admin roles, with admin-only endpoints
+- **FluentValidation** — request validation out of the box
+- **Swagger/OpenAPI** — with Bearer auth support
+- **Health checks** — readiness endpoint at `/health`
+- **Rate limiting** — fixed window per endpoint
+- **Docker end-to-end** — spin up API + SQL Server with a single command
+- **GitHub Actions CI** — build and test on every push
 
 ---
 
 ## Quickstart (Docker) ✅ Recommended
 
 ### Requirements
+
 - Docker Desktop
 
-### 1) Create `.env`
-Copy from `env.example`:
+### 1) Create your `.env`
+
 ```bash
 cp env.example .env
 ```
 
-Example `.env`:
-```bash
+Fill it in:
+
+```env
 MSSQL_SA_PASSWORD=YourStrong!Passw0rd
-JWT_KEY=dev-only-key-change-me-dev-only-key-change-me
+JWT_KEY=super-secret-key-change-me-in-production-2024!
 ```
 
-### 2) Run API + DB
+> Make sure `JWT_KEY` is at least 32 characters or the app will throw on startup.
+
+### 2) Start everything
+
 ```bash
 docker compose up --build
 ```
 
+This starts the API and SQL Server together. EF migrations run automatically on startup.
+
 ### 3) Open
+
 - Swagger UI: http://localhost:8080/swagger
-- Health: http://localhost:8080/health
+- Health check: http://localhost:8080/health
 
-### Auth endpoints (versioned)
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `GET  /api/v1/auth/me` (Authorization: Bearer `<token>`)
+---
 
-Example (register):
-```bash
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"test@example.com\",\"password\":\"Password123!\"}"
-```
+## Auth endpoints
 
-### Tests
+All endpoints are versioned under `/api/v1/`.
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Create a new account |
+| POST | `/api/v1/auth/login` | Login, returns `accessToken` + `refreshToken` |
+| GET | `/api/v1/auth/me` | Get current user info (requires Bearer token) |
+| POST | `/api/v1/auth/refresh` | Get new tokens using refresh token |
+| POST | `/api/v1/auth/revoke` | Invalidate a refresh token (logout) |
+
+## Admin endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/v1/admin/users` | List all users (Admin role required) |
+
+---
+
+## How auth works
+
+1. Call `/login` → you get a short-lived `accessToken` (1 hour) and a `refreshToken` (7 days)
+2. Use the `accessToken` as `Authorization: Bearer <token>` on protected endpoints
+3. When it expires, call `/refresh` with the refresh token to get a new pair
+4. The old refresh token is immediately invalidated on use (rotation)
+5. Call `/revoke` to log out and invalidate the refresh token
+
+---
+
+## Running tests
+
 ```bash
 dotnet test
 ```
 
 ---
 
+## Project structure
+
+```
+Api/
+  Controllers/    # AuthController, ProjectsController, AdminController
+  Data/           # AppDbContext
+  Domain/         # AppUser, Project, RefreshToken
+  Auth/           # JwtSettings
+  Migrations/     # EF Core migrations
+tests/
+  Api.Tests/
+  Api.IntegrationTests/
+```
+
+---
+
 ## Italiano
 
+Un template di partenza che ho costruito per avere una base solida ogni volta che inizio un nuovo progetto API con ASP.NET Core. Copre tutto quello che mi ritrovo sempre a dover aggiungere: auth, sicurezza, Docker, CI, test.
+
 ### Cosa include
-- **ASP.NET Core Web API** (.NET)
+
+- **ASP.NET Core Web API** (.NET 8)
 - **EF Core + SQL Server**
-- **Autenticazione JWT** (Register / Login / Me)
-- **Swagger/OpenAPI**
-- **Health Checks**
-- **Test automatici** + **GitHub Actions CI**
-- **Docker end-to-end**: avvia **API + DB** con un solo comando
+- **Autenticazione JWT** — register, login, dati utente corrente
+- **Refresh token** con rotazione e revoca
+- **Protezione brute force** — lockout account dopo 5 tentativi falliti
+- **RBAC** — ruoli User e Admin, con endpoint admin-only
+- **FluentValidation** — validazione delle request
+- **Swagger/OpenAPI** — con supporto Bearer auth
+- **Health check** — endpoint `/health`
+- **Rate limiting** — fixed window per endpoint
+- **Docker end-to-end** — API + SQL Server con un comando
+- **GitHub Actions CI** — build e test ad ogni push
 
 ---
 
 ## Avvio rapido (Docker) ✅ Consigliato
 
 ### Requisiti
+
 - Docker Desktop
 
-### 1) Crea `.env`
-Copia da `env.example`:
+### 1) Crea il `.env`
+
 ```bash
 cp env.example .env
 ```
 
-Esempio `.env`:
-```bash
+Compilalo:
+
+```env
 MSSQL_SA_PASSWORD=YourStrong!Passw0rd
-JWT_KEY=dev-only-key-change-me-dev-only-key-change-me
+JWT_KEY=super-secret-key-change-me-in-production-2024!
 ```
 
-### 2) Avvia API + DB
+> `JWT_KEY` deve essere di almeno 32 caratteri, altrimenti l'app crasha all'avvio.
+
+### 2) Avvia tutto
+
 ```bash
 docker compose up --build
 ```
 
+Avvia API e SQL Server insieme. Le migration EF girano in automatico.
+
 ### 3) Apri
+
 - Swagger UI: http://localhost:8080/swagger
-- Health: http://localhost:8080/health
+- Health check: http://localhost:8080/health
 
-### Endpoint Auth (versionati)
-- `POST /api/v1/auth/register`
-- `POST /api/v1/auth/login`
-- `GET  /api/v1/auth/me` (Authorization: Bearer `<token>`)
+---
 
-Esempio (register):
-```bash
-curl -X POST http://localhost:8080/api/v1/auth/register \
-  -H "Content-Type: application/json" \
-  -d "{\"email\":\"test@example.com\",\"password\":\"Password123!\"}"
-```
+## Endpoint Auth
 
-### Test
+Tutti gli endpoint sono versionati sotto `/api/v1/`.
+
+| Metodo | Endpoint | Descrizione |
+|--------|----------|-------------|
+| POST | `/api/v1/auth/register` | Crea un nuovo account |
+| POST | `/api/v1/auth/login` | Login, restituisce `accessToken` + `refreshToken` |
+| GET | `/api/v1/auth/me` | Dati utente corrente (richiede Bearer token) |
+| POST | `/api/v1/auth/refresh` | Ottieni nuovi token dal refresh token |
+| POST | `/api/v1/auth/revoke` | Invalida un refresh token (logout) |
+
+## Endpoint Admin
+
+| Metodo | Endpoint | Descrizione |
+|--------|----------|-------------|
+| GET | `/api/v1/admin/users` | Lista tutti gli utenti (richiede ruolo Admin) |
+
+---
+
+## Come funziona l'auth
+
+1. Chiami `/login` → ricevi un `accessToken` (1 ora) e un `refreshToken` (7 giorni)
+2. Usi l'`accessToken` come `Authorization: Bearer <token>` sugli endpoint protetti
+3. Quando scade, chiami `/refresh` con il refresh token per ottenere una nuova coppia
+4. Il vecchio refresh token viene immediatamente invalidato (rotazione)
+5. Chiami `/revoke` per fare logout e invalidare il refresh token
+
+---
+
+## Eseguire i test
+
 ```bash
 dotnet test
 ```
