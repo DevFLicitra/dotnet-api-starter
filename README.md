@@ -18,6 +18,7 @@ A personal starter template I built to have a solid, production-ready base whene
 - **Refresh tokens** with rotation and revoke (no long-lived access tokens)
 - **Brute force protection** — account lockout after 5 failed login attempts
 - **RBAC** — User and Admin roles, with admin-only endpoints
+- **Database seeding** — admin user and demo data on first startup
 - **FluentValidation** — request validation out of the box
 - **Swagger/OpenAPI** — with Bearer auth support
 - **Health checks** — readiness endpoint at `/health`
@@ -93,6 +94,16 @@ All endpoints are versioned under `/api/v1/`.
 
 ---
 
+## Default seed data
+
+On first startup the app seeds:
+- Admin user: `admin@admin.com` / `Admin123!`
+- 2 demo projects
+
+> Change the admin password immediately in any non-local environment.
+
+---
+
 ## Running tests
 
 ```bash
@@ -106,7 +117,7 @@ dotnet test
 ```
 Api/
   Controllers/    # AuthController, ProjectsController, AdminController
-  Data/           # AppDbContext
+  Data/           # AppDbContext, DbSeeder
   Domain/         # AppUser, Project, RefreshToken
   Auth/           # JwtSettings
   Migrations/     # EF Core migrations
@@ -129,6 +140,7 @@ Un template di partenza che ho costruito per avere una base solida ogni volta ch
 - **Refresh token** con rotazione e revoca
 - **Protezione brute force** — lockout account dopo 5 tentativi falliti
 - **RBAC** — ruoli User e Admin, con endpoint admin-only
+- **Seeding del database** — utente admin e dati demo al primo avvio
 - **FluentValidation** — validazione delle request
 - **Swagger/OpenAPI** — con supporto Bearer auth
 - **Health check** — endpoint `/health`
@@ -201,6 +213,16 @@ Tutti gli endpoint sono versionati sotto `/api/v1/`.
 3. Quando scade, chiami `/refresh` con il refresh token per ottenere una nuova coppia
 4. Il vecchio refresh token viene immediatamente invalidato (rotazione)
 5. Chiami `/revoke` per fare logout e invalidare il refresh token
+
+---
+
+## Dati di seed
+
+Al primo avvio l'app crea automaticamente:
+- Utente admin: `admin@admin.com` / `Admin123!`
+- 2 progetti demo
+
+> Cambia la password admin subito in qualsiasi ambiente non locale.
 
 ---
 

@@ -158,6 +158,8 @@ if (app.Environment.IsDevelopment())
             try
             {
                 db.Database.Migrate();
+                await DbSeeder.SeedAsync(db);
+                
                 break;
             }
             catch when (attempt < maxAttempts)
