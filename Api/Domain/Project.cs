@@ -9,4 +9,5 @@ public sealed class Project
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.UtcNow;
     public bool IsDeleted { get; set; }
     public DateTimeOffset? DeletedAt { get; set; }
+    public byte[] RowVersion { get; set; } = [];
 }

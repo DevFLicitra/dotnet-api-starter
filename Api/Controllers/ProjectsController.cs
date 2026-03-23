@@ -90,7 +90,18 @@ public sealed class ProjectsController(AppDbContext db) : ControllerBase
         entity.Description = request.Description?.Trim();
         entity.UpdatedAt = DateTimeOffset.UtcNow;
 
-        await db.SaveChangesAsync(ct);
+        try
+        {
+            await db.SaveChangesAsync(ct);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            return Problem(
+                title: "Conflict",
+                detail: "The project was modified by someone else. Fetch the latest version and retry.",
+                statusCode: StatusCodes.Status409Conflict);
+        }
+
         return NoContent();
     }
 
